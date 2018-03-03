@@ -68,19 +68,22 @@ class CounterComponent extends Counter {
 }
 
 class Panel{
-    constructor(e){
-        this.elem = e;
+    constructor(el){
+        this.el = el;
     }
     clear(){
-        this.elem.innerHTML = '';
+        this.el.innerHTML = '';
     }
 }
 
 class InputPanel extends Panel {
-    constructor(e, enterListener){
-        super(e);
-        this.enterListener = enterListener;
-        this.elem.addEventListener('keydown', (e)=>{
+    constructor(el, { pressEnter, right, wrong }){
+        super(el);
+        console.log(this);
+        this.enterListener = pressEnter;
+        this.rightListener = right;
+        this.wrongListener = wrong;
+        this.el.addEventListener('keydown', (e)=>{
             const keyCode = e.keyCode;
             if(isLeftMoving(keyCode) || isRightMoving(keyCode)) return;
             else if(!isInteger(keyCode)) {
@@ -88,7 +91,7 @@ class InputPanel extends Panel {
                 e.stopPropagation();
             }
         });
-        this.elem.addEventListener('keyup', (e)=>{
+        this.el.addEventListener('keyup', (e)=>{
             const keyCode = e.keyCode;
             const prevInput = e.target.previousElementSibling;
             const nextInput = e.target.nextElementSibling;
@@ -110,50 +113,44 @@ class InputPanel extends Panel {
         });
     }
     get inputs(){
-        return Array.prototype.slice.call(this.elem.children);
+        return Array.prototype.slice.call(this.el.children);
     }
     makeDigits(digit){
         range(digit).forEach(_=>{
-            this.elem.innerHTML += '<input type="text" maxlength="1" class="digit-input" placeholder="•">';
+            this.el.innerHTML += '<input type="text" maxlength="1" class="digit-input" placeholder="•">';
         });
     }
 }
 
 class ResultPanel extends Panel {
-    constructor(){
-        super();
+    constructor(el){
+        super(el);
     }
-    addResult(data){
-        if(!(data instanceof ResultData)) ERROR('parameter is must be instance of ResultData.')
-        this.elem.innerHTML = '<li class="list-group-item">' +
-                                `<span class="guess">${data.values}</span>` +
-                                `<span class="badge result">${data}</span>` +
-                              '</li>' +
-                              this.elem.innerHTML;
-    }
-}
-
-class ResultData {
-    constructor(...args){
-        [ this.values, this.strike, this.ball ] = args;
-    }
-    [Symbol.toPrimitive](hint){
-        return `${this.strike}S${this.ball}`;
+    addResult({ values, result }){
+        this.el.innerHTML = '<li class="list-group-item">' +
+                                `<span class="guess">${values}</span>` +
+                                `<span class="badge result">${result}</span>` +
+                            '</li>' +
+                              this.el.innerHTML;
     }
 }
 
 class Game {
     constructor(){}
-    init({start, end}){
+    init({start, end, rightAnswer, wrongAnswer}){
         this.startListener = start;
         this.endListener = end;
+        this.rightAnswerListener = rightAnswer;
+        this.wrongAnswerListener = wrongAnswer;
+        this.digits;
     }
     start(){
         if(this.digits === undefined) ERROR('digits is not defined');
 
         const set = range(10), randoms = [];
         let randIndex;
-        range(digits).forEach(v => {
+        // this.digits 길이만큼 랜덤한 숫자 배열 생성
+        range(this.digits).forEach(v => {
             randIndex = Math.floor(Math.random()*set.length);
             randoms.push(set[randIndex]);
             set.splice(randIndex, 1);
@@ -165,18 +162,23 @@ class Game {
     end(){
         this.endListener();
     }
-    getResult(inputs){
+    findResult(values){
         if(this.answer === undefined) ERROR('answer is not defined.');
 
         let strike = 0, ball = 0;
         this.answer.forEach((v1, i) => {
-            inputs.forEach((v2, j) => {
+            values.forEach((v2, j) => {
                 if(v1 !== v2) return;
                 else if(i === j) strike++;
                 else if(i !== j) ball++;
             })
         });
-        return { strike, ball, isCorrect: strike === this.answer.length }
+
+        if(values.length === strike) {
+            this.rightAnswerListener();
+        } else {
+            this.wrongAnswerListener(values, `${strike}S${ball}B`);
+        }
     }
 }
 
@@ -184,31 +186,33 @@ return {
     init(){
         const game = new Game();
         const resultPanel = new ResultPanel(sel('.result-container'));
-        const inputPanel = new InputPanel(sel('.digit-input-container', {
-            pressEnterListener: e => {
+        const inputPanel = new InputPanel(sel('.digit-input-container'), {
+            pressEnter(e){
                 const values = inputPanel.inputs.map(i => Number(i.value));
-                game.getResult(values);
-            },
-            answerListener: _ => {
-                alert('정답');
-                game.end();
-            },
-            wrongAnswerListener: _ => {
-                inputPanel.inputs.forEach(i => i.value = null);
-                inputPanel.inputs[0].select();
+                game.findResult(values);
             }
-        }));
+        });
         game.init({
-            startListener(digits){
+            start(digits){
                 sel('.digit-selector').style.display = 'none';
                 sel('.main-game').style.display = 'block';
-                inputPanel.makeDigits(game.digit);
+                inputPanel.makeDigits(game.digits);
             },
-            endListener(){
+            end(){
                 sel('.digit-selector').style.display = 'block';
                 sel('.main-game').style.display = 'none';
                 inputPanel.clear();
                 resultPanel.clear();
+            },
+            rightAnswer(){
+                alert('정답 입니다.');
+                game.end();
+                inputPanel.clear();
+            },
+            wrongAnswer(values, result){
+                inputPanel.inputs.forEach(i => i.value = null);
+                inputPanel.inputs[0].select();
+                resultPanel.addResult({values, result});
             }
         });
 
