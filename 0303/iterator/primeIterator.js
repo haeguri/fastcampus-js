@@ -1,17 +1,20 @@
 function primeIterator(){
     const isPrime = (n) => {
-        if(n < 2) return false;
-        else for(let i = 2; i < n; i++) if(n % i === 0) return false;
+        if(n < 2) {
+            return false;
+        } else {
+            for(let i = 2; i < n; i++) if(n % i === 0) return false;
+        }
         return true;
     };
-    const limit = 100;
-    let curr = 2;
+    const limit = 5;
+    let curr = 1;
     return {
-        next: () => {
-            while(curr <= limit && !isPrime(curr)) { curr++ }
+        next(){
+            if(!isPrime(++curr)) this.next();
             return {
                 done: curr > limit,
-                value: curr++
+                value: curr
             }
         }
     }
