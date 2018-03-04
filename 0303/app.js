@@ -1,7 +1,13 @@
 import primeIterable from './iterator/primeIterator.js';
 import primeGenerator from './generator/primeGenerator.js';
 
-for(let number of primeIterable) {
+
+console.log('....iterator.....');
+for(let n of primeIterable) {
+    console.log(n);
+}
+
+console.log('....generator....');
+for(let number of primeGenerator()) {
     console.log(number);
 }
-// primeIterator test.

@@ -7,11 +7,11 @@ function primeIterator(){
         }
         return true;
     };
-    const limit = 5;
+    const limit = 100;
     let curr = 1;
     return {
         next(){
-            if(!isPrime(++curr)) this.next();
+            if(!isPrime (++curr)) this.next();
             return {
                 done: curr > limit,
                 value: curr
