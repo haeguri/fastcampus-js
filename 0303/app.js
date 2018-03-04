@@ -1,4 +1,7 @@
-import primeIterator from './03_iterator/primeIterator.js';
-import primeGenerator from './04_generator/primeGenerator.js';
+import primeIterable from './iterator/primeIterator.js';
+import primeGenerator from './generator/primeGenerator.js';
 
+for(let number of primeIterable) {
+    console.log(number);
+}
 // primeIterator test.
