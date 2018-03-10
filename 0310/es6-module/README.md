@@ -1,11 +1,12 @@
 # ES6 Module System
 
-export 구문을 사용하면 자바스크립트 모듈의 일부를 외부 모듈에서 사용할 수 있도록 내보낼 수 있다. 내보낼 수 있는 값은 문자열, 숫자 같은 원시값과 객체, 배열, 함수와 같은 참조값도 보낼 수 있다. 모듈 export 구문의 사용법에는 두 가지가 있다.
+모듈 시스템에서는 모듈에서 값을 내보면 다른 모듈에서는 그 값을 가져올 수 있다. 내보낼 수 있는 값은 문자열, 숫자같은 원시값뿐만 아니라 객체, 배열, 함수같은 참조값도 보낼 수 있다. 먼저 값을 내보내는 방법은 'export' 구문을 사용하는 것인데, 사용법에는 두 가지가 있다.
+
 - named export
 - default export
 
 ## named export/import
-'named export'에는 외부로 내보내는 값에 이름을 붙인다. 
+'named export'는 외부로 내보내는 값에 이름을 지을 수 있다.
 
     /* calculator.js */
     export const PI = 3.14;
@@ -22,7 +23,7 @@ export 구문을 사용하면 자바스크립트 모듈의 일부를 외부 모�
         multiply
     };
 
-import하는 모듈은 해당 모듈의 값에 접근하기 위해서는 export된 이름을 사용해야 한다.
+import하는 모듈은 export될 때의 이름을 사용해서 값에 접근할 수 있다.
 
     /* index.js */
     import { PI, add, sub, multiply, module } from './calculator.js';
