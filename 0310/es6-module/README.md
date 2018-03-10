@@ -1,14 +1,13 @@
-# ES6 Module System
+# ES6 Module import/export
 
-모듈 시스템에서는 모듈에서 값을 내보면 다른 모듈에서는 그 값을 가져올 수 있다. 내보낼 수 있는 값은 문자열, 숫자같은 원시값뿐만 아니라 객체, 배열, 함수같은 참조값도 보낼 수 있다. 먼저 값을 내보내는 방법은 'export' 구문을 사용하는 것인데, 사용법에는 두 가지가 있다.
+ES6의 모듈 import/export를 사용하면 모듈에서 값을 내보내거나 다른 모듈에서 export된 값을 불러올 수 있다. 
 
-- named export
-- default export
+## Named export
 
-## named export/import
-'named export'는 외부로 내보내는 값에 이름을 지을 수 있다.
+이름 있는 export는 모듈에서 여러 값을 내보낼 때 유용하다. export 뒤에는 반드시 선언문이 오거나, export할 변수들의 이름을 `{ }`로 감싸야 한다.
 
     /* calculator.js */
+
     export const PI = 3.14;
     export let add = (a, b) => a + b;
     const sub = (a, b) => a - b;
@@ -23,9 +22,10 @@
         multiply
     };
 
-import하는 모듈은 export될 때의 이름을 사용해서 값에 접근할 수 있다.
+다른 모듈에서는 import할 값들을 `{ }`로 감싸서 가져올 수 있다.
 
     /* index.js */
+
     import { PI, add, sub, multiply, module } from './calculator.js';
 
     console.log(PI); // 3.14
@@ -34,36 +34,38 @@ import하는 모듈은 export될 때의 이름을 사용해서 값에 접근할 
     console.log(multiply(11, 3)); // 33
     console.log(module.version); // '0.0.0'
 
-'named export' 구문은 반드시 문이나 선언문과 함께 사용해야 한다.
+이름 있는 export 뒤에는 표현식이 올 수 없다.
 
     const PI = 3.14;
     export PI; // Error
     export a*b; // Error
 
-## default export/import
-'export default'는 이름없이 값을 내보낼 수 있다. 'export default' 구문은 반드시 표현식과 함께 사용해야 한다. 
+## default export
+default export는 모듈에서 이름없이 값을 내보낼 수 있으며, 한 개의 모듈에 하나만 허용이 된다. `export default` 뒤에는 표현식이 와야 한다.
 
-    /* calculator.js */
-    export default class Calculator { };
+```
+/* calculator.js */
 
-    
-    /* index.js */
-    import CalculatorClass from './calculator.js';
+export default class Calculator { };
+// export default class Person { }; // Error!
+```
+```
+/* index.js */
 
-    console.log(CalculatorClass); // class Calculator{ };
+import CalculatorClass from './calculator.js';
 
-'export default' 구문은 하나의 모듈에는 한 개만 와야 한다.
+console.log(CalculatorClass); // class Calculator{ };
+```
 
-    /* calculator.js */
-    const add = (a, b) => a + b;
-    export default 2;
-    export default add; // Error!
+default export는 named export와 병행해서 사용될 수도 있다.
 
-또는 'named export'와 병행해서 사용될 수도 있다.
+```
+/* calculator.js */
 
-    /* calculator.js */
-    export const PI = 3.14;
-    export default class Calculator{};
+export const PI = 3.14;
+export default class Calculator{};
 
-    /* index.js */
-    import CalculatorClass, { PI } from './calculator.js';
+/* index.js */
+
+import CalculatorClass, { PI } from './calculator.js';
+```

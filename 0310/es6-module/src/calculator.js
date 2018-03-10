@@ -7,9 +7,6 @@ export const module = {
     version: '0.0.0'
 };
 
-export {
-    sub,
-    multiply
-};
+export { sub, multiply };
 
 export default class Calculator { };
