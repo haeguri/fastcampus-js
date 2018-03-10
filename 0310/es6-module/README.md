@@ -33,14 +33,14 @@ import하는 모듈은 해당 모듈의 값에 접근하기 위해서는 export�
     console.log(multiply(11, 3)); // 33
     console.log(module.version); // '0.0.0'
 
-'named export'에는 반드시 선언문을 작성해야 하며 표현식은 올 수 없다.
+'named export' 구문은 반드시 문이나 선언문과 함께 사용해야 한다.
 
     const PI = 3.14;
     export PI; // Error
     export a*b; // Error
 
 ## default export/import
-'export default'는 이름없이 값을 내보낼 수 있다. 'export default'는 'named export'와 반대로 표현식만 내보낼 수 있고, 하나의 모듈에는 한 개의 'export default'만 올 수 있다.
+'export default'는 이름없이 값을 내보낼 수 있다. 'export default' 구문은 반드시 표현식과 함께 사용해야 한다. 
 
     /* calculator.js */
     export default class Calculator { };
@@ -51,7 +51,14 @@ import하는 모듈은 해당 모듈의 값에 접근하기 위해서는 export�
 
     console.log(CalculatorClass); // class Calculator{ };
 
-'named export'와 병행해서 사용될 수도 있다.
+'export default' 구문은 하나의 모듈에는 한 개만 와야 한다.
+
+    /* calculator.js */
+    const add = (a, b) => a + b;
+    export default 2;
+    export default add; // Error!
+
+또는 'named export'와 병행해서 사용될 수도 있다.
 
     /* calculator.js */
     export const PI = 3.14;
