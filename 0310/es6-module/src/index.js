@@ -1,5 +1,4 @@
-import { PI, add, sub, multiply, module } from './calculator.js';
-import CalculatorClass from './calculator.js';
+import CalculatorClass, { PI, add, sub, multiply, module } from './calculator.js';
 
 console.log(PI); // 3.14
 console.log(add(1,1)); // 2
