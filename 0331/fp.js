@@ -30,6 +30,32 @@ const reduce = (list, reducer, init) => {
 }
 
 const pipe = (...args) => reduce(args, (p, f) => f(p));
+const currying = (f) => {
+    const length = f.length;
+
+    return function curried(arg){
+        const args = [];
+        let i = 0;
+        const result = arg => {
+            console.log(args, arg, i);
+            args.push(arg);
+            return ++i === length ? f(...args) : result;
+        }
+        
+        // args.push(arg);
+        // return ++i === length ? f(...args) : result;
+        return result(arg);
+    }
+}
+
+const getVAT = (rate, amount) => amount * (1 + rate / 100);
+
+const getVATCurried = currying(getVAT);
+const getNationalVAT = getVATCurried(5);
+const getStateVAT = getVATCurried(2);
+
+console.log(getNationalVAT(1000));
+console.log(getStateVAT(1500));
 
 const sample = [0, 1, 2];
 const value = reduce(
